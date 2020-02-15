@@ -17,10 +17,10 @@ docID=0
 urllist=[]
 recipes_dict={}
 
-tree = sitemap_tree_for_homepage("https://www.bbc.co.uk/food/")
+tree = sitemap_tree_for_homepage("https://www.bbcgoodfood.com/")
 for page in tree.all_pages():
     url=page.url
-    if "https://www.bbc.co.uk/food/recipes/" in url:
+    if "https://www.bbcgoodfood.com/recipes" in url:
         urllist.append(page.url)
 
 with open('url.txt','w') as fp:
@@ -29,19 +29,30 @@ with open('url.txt','w') as fp:
 
 signal.signal(signal.SIGALRM, alarm_handler)
 
-with open('data.txt','w') as fp:
+with open('14_02_20.txt','w') as fp:
     for url in urllist:
         signal.alarm(8)
+        print(url)
+        scraper = scrape_me(url)
+        print(scraper.image())
+
+        link=scraper.links()
+        print(link)
+        time.sleep(100)
+        time.sleep(20)
+
         try:
-            print(url)
             scraper = scrape_me(url)
             title=scraper.title()
             time=scraper.total_time()
             ingredients=scraper.ingredients()
-            if title and time and ingredients:
+            ratings=scraper.ratings()
+
+            if title and ingredients:
                 docID +=1
                 fp.write(str(docID) + "\n")
                 fp.write(str(url) + "\n")
+                fp.write(str(ratings) + "\n")
                 fp.write(title + "\n")
                 ingredients_str = '   '.join(ingredients)
                 fp.write(ingredients_str + "\n")
@@ -51,5 +62,6 @@ with open('data.txt','w') as fp:
                 raise Exception
         except:
             pass
+
 
 signal.alarm(0)
