@@ -1,0 +1,16 @@
+
+body {
+    background: url('../img/detail.jpg') no-repeat;
+    background-size: cover;
+    width: 100%;
+    overflow: hidden;
+}
+
+.data {
+    height: 300px;
+    width: 340px;
+    position: absolute;
+    padding: 5px 20px;
+    left: 10%;
+    top:28%;
+}

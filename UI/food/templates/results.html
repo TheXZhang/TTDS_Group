@@ -1,0 +1,137 @@
+<!DOCTYPE html >
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Home</title>
+</head>
+<body>
+
+<div id="page">
+    <form id="searchForm" method="post" action="/results" onsubmit="onSubmit()">
+       <a href="."><h1>Search Recipe</h1></a>
+        <fieldset>
+            <input name="dislike_list" type="text" hidden id="dislike_list"/>
+            <input required value="{{ context.recipe_name }}" name="recipe" id="s" type="text"/>
+            <input type="submit" value="Submit" id="submitButton"/>
+        </fieldset>
+        <div class="choose">
+            <ul class="switch">
+                what don't you want
+                <input type="checkbox" id="blance" {% if context.dislike_list | length >0 %}checked{% endif %}/>
+                <label class="label" for="blance"><em></em></label>
+            </ul>
+            <div class="{% if context.dislike_list | length <=0 %}show{% endif %} add vars">
+                <input id="item" id="s2" type="text"/>
+                <button type="button" onclick="add_item()">add</button>
+            </div>
+        </div>
+        <div class=" {% if context.dislike_list | length <=0 %}show{% endif %} list vars" id="re_list">
+            {% for item in context.dislike_list %}
+                <div id="item{{ loop.index }}" class="list-item"><span data-id="{{ loop.index }}"
+                                                                       class="food">{{ item }}</span><span
+                        id="{{ loop.index }}" onclick="delete_item(this.id)" class="del">×</span></div>
+            {% endfor %}
+        </div>
+    </form>
+    <div class="results">
+        <div class="res-title">
+            Results
+        </div>
+        <div class="res-items">
+            {% if context.recipe_list|length >0 %}
+                {% for item in context.recipe_list %}
+                    <a class="res-item" href="{% if item.url %}{{ item.url }}{% else %}detail?id={{ item.id }}{% endif %}">
+                        <div class="res-item-name">
+                            {{ item.name }}
+                        </div>
+                        <div class="res-item-text">{{ item.description }}
+                        </div>
+                    </a>
+                {% endfor %}
+            {% else %}
+                <div class="res-item">No result found</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" type="text/css" href="../static/css/results.css?version=1.12022"/>
+</body>
+<script>
+    let items = [];
+    init_items();
+
+    function onSubmit() {
+        let dislike_list = [];
+        for (let i of items)
+            dislike_list.push(i.item);
+        document.getElementById("dislike_list").value = dislike_list.join(",");
+        return true;
+    }
+
+    function init_items() {
+        let load_items = document.querySelectorAll(".food");//这里的food 其实过敏的食物
+        load_items.forEach(res => {
+            items.push({
+                id: parseInt(res.dataset.id),
+                item: res.innerText
+            })
+        })
+    }
+
+    function switch_on() {
+        document.querySelectorAll(".vars").forEach(res => {
+            res.style.display = "flex";
+        });
+
+    }
+
+    function switch_off() {
+        document.querySelectorAll(".vars").forEach(res => {
+            res.style.display = "none";
+            document.querySelector(".list").innerHTML = "";
+        });
+        items=[];
+    }
+
+    document.getElementById("blance").addEventListener('change', function () {
+        if (this.checked)
+            switch_on();
+        else
+            switch_off();
+    });
+
+    function delete_item(id) {
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].id == id) {
+                items.splice(i, 1);
+                document.getElementById("item" + id).remove();
+            }
+        }
+    }
+
+    function check_exist(item) {
+        for (let i of items)
+            if (i.item === item)
+                return true;
+        return false;
+    }
+
+    function add_item() {
+        let item = document.getElementById("item").value;
+        if (item)
+            if (!check_exist(item)) {
+                let id = items.length === 0 ? 0 : (items[items.length - 1].id + 1);
+                items.push({
+                    id, item
+                });
+                let div = `<div id="item${id}" class="list-item"><span class="food">${item}</span><span id="${id}" onclick="delete_item(this.id)" class="del">×</span></div>`;
+                let ele = document.getElementById("re_list");
+                ele.innerHTML = ele.innerHTML + div;
+            } else {
+                alert("It has been repeated～")
+            }
+        else
+            alert("Please enter data")
+    }
+</script>
+</html>
