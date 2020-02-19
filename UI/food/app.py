@@ -10,8 +10,8 @@ def index():
     if request.method == "GET":
         return render_template("index.html")
     if request.method == "POST":
-        recipe_name, dislike_list = handle(request)
-        context = search(recipe_name, dislike_list)
+        recipe_name, dislike_list, processed_list = handle(request)
+        context = search(recipe_name, dislike_list, processed_list)
         return render_template("results.html", context=context)
 
 
@@ -28,8 +28,8 @@ def results():
         }
         return render_template("results.html", context=context)
     if request.method == "POST":
-        recipe_name, dislike_list = handle(request)
-        context = search(recipe_name, dislike_list)
+        recipe_name, dislike_list, processed_list = handle(request)
+        context = search(recipe_name, dislike_list, processed_list)
         return render_template("results.html", context=context)
 
 
@@ -37,8 +37,8 @@ def results():
 def detail():
     detail_id = request.args.get("id")
 
-    recipe_name, dislike_list = handle(request)
-    context = search(recipe_name, dislike_list)
+    recipe_name, dislike_list, processed_list = handle(request)
+    context = search(recipe_name, dislike_list, processed_list)
     recipe = context["recipe_list"][int(detail_id)]
 
     return render_template('detail.html',recipe=recipe)
