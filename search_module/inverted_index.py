@@ -31,7 +31,7 @@ def preprocessing(minutes_list,steps_list,ingredients_list,description_list):
         temp_number=[minutes_list[i]]
         preprocessed_list[i][0:0]=temp_number
 
-    with open('final.txt', 'w') as f:
+    with open('final.txt', 'w', encoding='utf-8') as f:
         for item in preprocessed_list:
             f.write("%s\n" % item)    
     positional_inverted_index(preprocessed_list)  
@@ -64,7 +64,7 @@ def remove_StopWord(case_folded_list):
         stopW_removed_list.append([word for word in item if word not in stopwords])
         #open a file to store the processed text of this stage
 
-    with open('tokenized and stop word removed.txt', 'w') as f:
+    with open('tokenized and stop word removed.txt', 'w', encoding='utf-8') as f:
         for item in stopW_removed_list:
             f.write("%s\n" % item)
 
@@ -80,7 +80,7 @@ def stemming(stopW_removed_list):
     #apply stemming to the word and store it in a new list
     for item in stopW_removed_list:
         stemmed_list.append([ps.stem(word) for word in item])
-    with open('tokenized and stopword removed and stemmed.txt', 'w') as f:
+    with open('tokenized and stopword removed and stemmed.txt', 'w', encoding='utf-8') as f:
         for item in stemmed_list:
             f.write("%s\n" % item)
 
@@ -91,7 +91,7 @@ def remove_number(stemmed_list):
     for item in stemmed_list:
         remove_number.append([word for word in item if not word.isdigit()])
 
-    with open('number removed.txt', 'w') as f:
+    with open('number removed.txt', 'w', encoding='utf-8') as f:
         for item in remove_number:
             f.write("%s\n" % item)      
     return remove_number
@@ -127,7 +127,7 @@ def positional_inverted_index(preprocessed_list):
         current_docID +=1                                                
 
     #store the indexs to a txt file as required
-    with open('inverted_index_print.txt', 'w') as f:
+    with open('inverted_index_print.txt', 'w', encoding='utf-8') as f:
         for word in word_dic:
             f.write(str(word)+":\n")
             for docID in word_dic[word]:
@@ -136,11 +136,11 @@ def positional_inverted_index(preprocessed_list):
                 f.write(final_string)
 
     #store the dictionary as json file so it can be read in another python file
-    with open('index_index_data.json','w') as fp:
+    with open('index_index_data.json','w', encoding='utf-8') as fp:
         json.dump(word_dic,fp)
 
     #store all document ID appeared for query search
-    with open('all_document_ID.txt','w') as f:
+    with open('all_document_ID.txt','w', encoding='utf-8') as f:
         for id_ in all_doc_ID:
             f.write(str(id_)+"\n")
 

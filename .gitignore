@@ -1,2 +1,5 @@
 food-com-recipes-and-user-interactions.zip
 /search_module/*.csv
+/search_module/index_index_data.json
+/search_module/result/*
+
