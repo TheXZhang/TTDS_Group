@@ -113,7 +113,7 @@ def handle(request):
         dislike_list = request.form.get("dislike_list").split(",")
 
     # verify input and return result for user
-    list_of_food_user = validation(recipe_name, tok=True, corr=True)
+    list_of_food_user = ' '.join(validation(recipe_name, tok=True, corr=True))
 
     # after verified, return list a stemmed word for server
     list_of_food_server = validation(recipe_name, tok=True, sto=True, corr=True, check_food=True, stem=True)
