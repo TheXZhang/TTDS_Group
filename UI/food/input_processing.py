@@ -1,10 +1,13 @@
 import string
 import nltk
+import re
 from nltk.stem import PorterStemmer
 from nltk.corpus import wordnet as wn
 from nltk.corpus import stopwords
 from spellchecker import SpellChecker
 
+with open("nltk_food.txt", "r") as f:
+    nltk_food = [i for line in f for i in line.split()]
 # recipe_database = [
 #     {
 #         "name": "bagel",
@@ -44,15 +47,44 @@ def remove_stopword(input):
             no_stop_input.append(word)
     return no_stop_input
 
-# spell check, check words length longer than 2
 def correction(input):
     spell = SpellChecker()
     valid_input = []
     for wor in input:
         # if the length of word larger than 2, then check correction
         if len(wor) > 2:
-            wor = spell.correction(wor)
-            valid_input.append(wor)
+            word_checked = spell.correction(wor)
+            lower_word = wor.lower()
+            # check is the input is a proper word, if it isn't, process to futher check
+            if word_checked != wor:
+                # if the word is food after correction after correction, output it
+                if if_food(word_checked) == 1:
+                    valid_input.append(word_checked)
+                # otherwise correct the input word to food in nltk food set
+                else:
+                    corpus_length = len(nltk_food)
+                    word_length = len(lower_word)
+                    count = 1
+                    found = False
+                    # if no match found in the food set, keep search
+                    while found is False:
+                        for fo in nltk_food:
+                            # if match found in the food set, output it and stop the loop
+                            if re.match(lower_word[:word_length], fo) != None:
+                                valid_input.append(fo)
+                                found = True
+                                break
+                            else:
+                                count += 1
+
+                            # if search reach end, run the search loop again
+                            if count == corpus_length:
+                                word_length = word_length - 1
+                                count = 0
+                                found = False
+            # if the input word is a word, then output it
+            else:
+                valid_input.append(word_checked)
         # if lenght of word less than 2, don't check
         else:
             valid_input.append(wor)
@@ -113,12 +145,15 @@ def handle(request):
         dislike_list = request.form.get("dislike_list").split(",")
 
     # verify input and return result for user
-    spell_checked_string = ' '.join(validation(recipe_name, tok=True, corr=True))
+    list_of_food_user = ' '.join(validation(recipe_name, tok=True, corr=True))
 
     # after verified, return list a stemmed word for server
     list_of_food_server = validation(recipe_name, tok=True, sto=True, corr=True, check_food=True, stem=True)
 
-    # verify the dilike food
-    list_of_dislike = validation(dislike_list, corr=True, check_food=True, stem=True)
+    # dislike food list for user
+    list_of_dislike_user = validation(dislike_list, corr=True)
 
-    return spell_checked_string, list_of_dislike, list_of_food_server
+    # verify the dilike food
+    list_of_dislike_server = validation(dislike_list, corr=True, check_food=True, stem=True)
+
+    return list_of_food_user, list_of_dislike, list_of_dislike_user, list_of_food_server
