@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 from input_processing import handle
-from search import search
+import search
 
 app = Flask(__name__)
 
@@ -11,7 +11,7 @@ def index():
         return render_template("index.html")
     if request.method == "POST":
         recipe_name, processed_dislike_list,dislike_list, processed_list = handle(request)
-        context = search(recipe_name, processed_dislike_list,dislike_list, processed_list)
+        context = search.main(recipe_name, processed_dislike_list,dislike_list, processed_list)
         return render_template("results.html", context=context)
 
 
@@ -29,7 +29,7 @@ def results():
         return render_template("results.html", context=context)
     if request.method == "POST":
         recipe_name, processed_dislike_list,dislike_list, processed_list = handle(request)
-        context = search(recipe_name, processed_dislike_list,dislike_list, processed_list)
+        context = search.main(recipe_name, processed_dislike_list,dislike_list, processed_list)
         return render_template("results.html", context=context)
 
 
