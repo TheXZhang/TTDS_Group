@@ -7,7 +7,7 @@ import sys
 
 
 
-def search(recipe, dislike_list, processed_list):
+def search(recipe, processed_dislike_list,dislike_list, processed_list):
     recipe_list= [
     {
         "id":0,
@@ -113,4 +113,3 @@ if __name__ == '__main__':
     query=sys.argv[1]
     print(query)
     main(query)
-    
