@@ -97,5 +97,19 @@
         else
             alert("Please enter data")
     }
+
+    window.onload = function(){
+        if(window.name!="hasLoad"){    
+            location.reload();    
+            window.name = "hasLoad";    
+            }else{    
+                window.name="";    
+                }
+    }
+
+
+
 </script>
+
+
 </html>
