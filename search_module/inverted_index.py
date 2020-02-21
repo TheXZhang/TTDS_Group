@@ -1,7 +1,7 @@
 import re
 import nltk
 import time
-import json
+import ujson
 import pandas as pd
 import timeit
 
@@ -31,9 +31,9 @@ def preprocessing(minutes_list,steps_list,ingredients_list,description_list):
         temp_number=[minutes_list[i]]
         preprocessed_list[i][0:0]=temp_number
 
-    with open('final.txt', 'w', encoding='utf-8') as f:
-        for item in preprocessed_list:
-            f.write("%s\n" % item)    
+    # with open('final.txt', 'w', encoding='utf-8') as f:
+    #     for item in preprocessed_list:
+    #         f.write("%s\n" % item)    
     positional_inverted_index(preprocessed_list)  
 
 
@@ -64,9 +64,9 @@ def remove_StopWord(case_folded_list):
         stopW_removed_list.append([word for word in item if word not in stopwords])
         #open a file to store the processed text of this stage
 
-    with open('tokenized and stop word removed.txt', 'w', encoding='utf-8') as f:
-        for item in stopW_removed_list:
-            f.write("%s\n" % item)
+    # with open('tokenized and stop word removed.txt', 'w', encoding='utf-8') as f:
+    #     for item in stopW_removed_list:
+    #         f.write("%s\n" % item)
 
     return stopW_removed_list
 
@@ -80,9 +80,9 @@ def stemming(stopW_removed_list):
     #apply stemming to the word and store it in a new list
     for item in stopW_removed_list:
         stemmed_list.append([ps.stem(word) for word in item])
-    with open('tokenized and stopword removed and stemmed.txt', 'w', encoding='utf-8') as f:
-        for item in stemmed_list:
-            f.write("%s\n" % item)
+    # with open('tokenized and stopword removed and stemmed.txt', 'w', encoding='utf-8') as f:
+    #     for item in stemmed_list:
+    #         f.write("%s\n" % item)
 
     return stemmed_list
 
@@ -91,10 +91,10 @@ def remove_number(stemmed_list):
     for item in stemmed_list:
         remove_number.append([word for word in item if not word.isdigit()])
 
-    with open('number removed.txt', 'w', encoding='utf-8') as f:
-        for item in remove_number:
-            f.write("%s\n" % item)      
-    return remove_number
+    # with open('number removed.txt', 'w', encoding='utf-8') as f:
+    #     for item in remove_number:
+    #         f.write("%s\n" % item)      
+    # return remove_number
 
 
 
@@ -104,7 +104,7 @@ def positional_inverted_index(preprocessed_list):
     #once all the above preprocessing steps are completed,
     #start index the processed text
     all_doc_ID=[]
-    current_docID=0
+    current_docID=1
     list_length=len(preprocessed_list)
     location_counter=0
     word_dic={}
@@ -137,18 +137,18 @@ def positional_inverted_index(preprocessed_list):
 
     #store the dictionary as json file so it can be read in another python file
     with open('index_index_data.json','w', encoding='utf-8') as fp:
-        json.dump(word_dic,fp)
+        ujson.dump(word_dic,fp)
 
     #store all document ID appeared for query search
     with open('all_document_ID.txt','w', encoding='utf-8') as f:
-        for id_ in all_doc_ID:
-            f.write(str(id_)+"\n")
+        for ID in all_doc_ID:
+            f.write(str(ID)+"\n")
 
 
 
 def main():
     columns=['name','id','minutes','contributor_id','submitted','tags','nutrition','n_steps','steps','description','ingredients','n_ingredients']
-    data=pd.read_csv("RAW_recipes.csv", names = columns, header=0)
+    data=pd.read_csv("RAW_recipes.csv", names = columns, header=0, nrows=1000)
 
     minutes_list=data.minutes.tolist()
     steps_list=data.steps.tolist()

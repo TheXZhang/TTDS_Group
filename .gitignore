@@ -3,4 +3,5 @@ food-com-recipes-and-user-interactions.zip
 /search_module/index_index_data.json
 /search_module/result/*
 /search_module/inverted_index_print.txt
-
+/UI/food/index_index_data.json
+/UI/food/RAW_recipes.csv
