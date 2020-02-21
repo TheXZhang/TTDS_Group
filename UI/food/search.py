@@ -6,7 +6,6 @@ import nltk
 import sys
 import pandas as pd
 import timeit
-import time
 
 
 # def search(recipe, processed_dislike_list, dislike_list, processed_list):
@@ -111,8 +110,6 @@ def retrieve_info(id_list,all_doc_ID,clicked=False):
 
     for i in range(len(id_list)):
         result=df.loc[df['Doc_ID'] == int(id_list[i])]
-        print (result)
-        time.sleep(10)
         description=result['description'].values
         ingredients=result['ingredients'].values
         steps=result['steps'].values
