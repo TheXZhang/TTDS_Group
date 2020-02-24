@@ -31,7 +31,7 @@ import time
 
 
 
-def tfidf(word_list,dislike_list,index,all_doc_ID):
+def tfidf(word_list,dislike_list,index,all_doc_ID, first_search=False):
     #for tfidf,there maybe a stopword in the query,
     #so we read the stopword file and stem the word
     overlapped_docID=[]
@@ -97,19 +97,22 @@ def tfidf(word_list,dislike_list,index,all_doc_ID):
     #sort the score list in descending order , it is a tuple (ID,score)
     scores.sort(key=lambda tup:tup[1], reverse= True)
     result_ID=[i[0] for i in scores]
-    result_ID=result_ID[:1]
+    result_ID=result_ID[:20]
 
-    prep_info(result_ID,all_doc_ID)
+    if first_search == True:
+        new_list_ID=prep_info(result_ID,all_doc_ID)
+        new_list_ID=new_list_ID + word_list
+        print(new_list_ID)
+        return tfidf(new_list_ID,dislike_list,index,all_doc_ID, first_search=False)
+    else:
+        with open('result_ID.txt', 'w', encoding='utf-8') as f:
+            for item in result_ID:
+                f.write(item + "\n")
 
-
-
-    # with open('result_ID.txt', 'w', encoding='utf-8') as f:
-    #     for item in result_ID:
-    #         f.write(item + "\n")
-
-    # result=retrieve_info(result_ID,all_doc_ID)
-
-    return result
+        result=retrieve_info(result_ID,all_doc_ID)
+        return result
+    
+    return []
 
 
 def retrieve_info(id_list,all_doc_ID):
@@ -172,7 +175,6 @@ def prep_info(id_list,all_doc_ID):
         return_result.append((str(steps)))
 
     new_word_list=pssf.main(return_result)
-    time.sleep(10000000)
 
     return new_word_list
 
@@ -186,7 +188,7 @@ def main(index,recipe, processed_dislike_list, dislike_list, processed_list):
     #delete the final character as its a empty string
     del all_doc_ID[-1]
 
-    recipe_list=tfidf(processed_list,processed_dislike_list,index,all_doc_ID)
+    recipe_list=tfidf(processed_list,processed_dislike_list,index,all_doc_ID,first_search=True)
 
     return {
         "recipe_name": recipe,
