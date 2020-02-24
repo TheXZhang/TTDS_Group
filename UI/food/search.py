@@ -1,11 +1,12 @@
 import json
 import re
-import shlex
 import math
 import nltk
 import sys
 import pandas as pd
 import timeit
+import pssf
+
 
 
 # def search(recipe, processed_dislike_list, dislike_list, processed_list):
@@ -95,13 +96,17 @@ def tfidf(word_list,dislike_list,index,all_doc_ID):
     #sort the score list in descending order , it is a tuple (ID,score)
     scores.sort(key=lambda tup:tup[1], reverse= True)
     result_ID=[i[0] for i in scores]
-    result_ID=result_ID[:30]
-    
-    with open('result_ID.txt', 'w', encoding='utf-8') as f:
-        for item in result_ID:
-            f.write(item + "\n")
+    result_ID=result_ID[:5]
 
-    result=retrieve_info(result_ID,all_doc_ID)
+    prep_info(result_ID,all_doc_ID)
+
+
+    
+    # with open('result_ID.txt', 'w', encoding='utf-8') as f:
+    #     for item in result_ID:
+    #         f.write(item + "\n")
+
+    # result=retrieve_info(result_ID,all_doc_ID)
 
     return result
 
@@ -147,6 +152,27 @@ def display_info(ID,all_doc_ID):
     return return_result
 
 
+def prep_info(id_list,all_doc_ID):
+    return_result=[]
+    skip_id=[int(ID) for ID in all_doc_ID if ID not in id_list]
+    df=pd.read_csv('RAW_recipes.csv', skiprows=skip_id, header=0)
+
+    for i in range(len(id_list)):
+        result=df.loc[df['Doc_ID'] == int(id_list[i])]
+        description=result['description'].values
+        ingredients=result['ingredients'].values
+        steps=result['steps'].values
+        name=result['name'].values
+        
+        return_result.append(id_list[i])
+        return_result.append((str(name)))
+        return_result.append((str(description)))
+        return_result.append((str(ingredients)))
+        return_result.append((str(steps)))
+
+    new_word_list=pssf.main(return_result)
+
+    return new_word_list
 
 
 
@@ -165,8 +191,6 @@ def main(index,recipe, processed_dislike_list, dislike_list, processed_list):
         "dislike_list": dislike_list,
         "recipe_list": recipe_list
         }
-
-
 
 
 if __name__ == '__main__':
