@@ -90,20 +90,23 @@ def tfidf(word_list,dislike_list,index,all_doc_ID):
     stop = timeit.default_timer()
     print('Second module Time: ', stop - start)
 
+        
 
-    
-    start = timeit.default_timer()
     #sort the score list in descending order , it is a tuple (ID,score)
     scores.sort(key=lambda tup:tup[1], reverse= True)
     result_ID=[i[0] for i in scores]
-    result=retrieve_info(result_ID[:30],all_doc_ID)
+    result_ID=result_ID[:30]
+    
+    with open('result_ID.txt', 'w', encoding='utf-8') as f:
+        for item in result_ID:
+            f.write(item + "\n")
 
-    stop = timeit.default_timer()
-    print('third module Time: ', stop - start)
+    result=retrieve_info(result_ID,all_doc_ID)
+
     return result
 
 
-def retrieve_info(id_list,all_doc_ID,clicked=False):
+def retrieve_info(id_list,all_doc_ID):
     return_result=[]
     skip_id=[int(ID) for ID in all_doc_ID if ID not in id_list]
     df=pd.read_csv('RAW_recipes.csv', skiprows=skip_id, header=0)
@@ -112,11 +115,10 @@ def retrieve_info(id_list,all_doc_ID,clicked=False):
         result=df.loc[df['Doc_ID'] == int(id_list[i])]
         description=result['description'].values
         ingredients=result['ingredients'].values
-        steps=result['steps'].values
         name=result['name'].values
         
         return_result.append({})
-        return_result[i]['id']=i
+        return_result[i]['id']=int(id_list[i])
         return_result[i]['name']=(str(name))[2:-2]
         return_result[i]['ingredients']=(str(ingredients))[2:-2]
         return_result[i]['description']=(str(description))[2:-2]
@@ -124,22 +126,33 @@ def retrieve_info(id_list,all_doc_ID,clicked=False):
     return return_result
 
 
+def display_info(ID,all_doc_ID):
+    return_result={}
+    temp_copy=all_doc_ID.copy()
+    skip_id=temp_copy.remove(ID)
+    df=pd.read_csv('RAW_recipes.csv', skiprows=skip_id, header=0)
+
+    
+    result=df.loc[df['Doc_ID'] == int(ID)]
+    ingredients=result['ingredients'].values
+    steps=result['steps'].values
+    name=result['name'].values
+    
+    return_result['id']=int(ID)
+    return_result['name']=(str(name))[2:-2]
+    return_result['ingredients']=(str(ingredients))[2:-2]
+    return_result['description']=(str(steps))[2:-2]
+    return_result['url']=''
+
+    return return_result
 
 
 
 
 
 
-def main(recipe, processed_dislike_list, dislike_list, processed_list):
-    #open the json file and retrieve the dictionary created in the preprocessing
-    print(recipe)
-
-    start = timeit.default_timer()
-    with open('index_index_data.json', 'r') as fp:
-        index = json.load(fp)
-    stop = timeit.default_timer()
-    print('ready', stop - start)    
-
+def main(index,recipe, processed_dislike_list, dislike_list, processed_list):
+ 
     #read all the document IDs and split it so we have a list of IDs
     all_doc_ID=open("all_document_ID.txt").read().split('\n')
     #delete the final character as its a empty string

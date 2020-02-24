@@ -1,7 +1,7 @@
 import re
 import nltk
 import time
-import ujson
+import json
 import pandas as pd
 import timeit
 
@@ -37,7 +37,7 @@ def preprocessing(minutes_list,steps_list,ingredients_list,description_list):
     positional_inverted_index(preprocessed_list)  
 
 
-
+ 
 def tokenisation(input_list):
     #for each line we use regular expression "\W+" to split by words
     tokenized_list=[re.split('\W+',string) for string in input_list]
@@ -94,7 +94,7 @@ def remove_number(stemmed_list):
     # with open('number removed.txt', 'w', encoding='utf-8') as f:
     #     for item in remove_number:
     #         f.write("%s\n" % item)      
-    # return remove_number
+    return remove_number
 
 
 
@@ -137,7 +137,7 @@ def positional_inverted_index(preprocessed_list):
 
     #store the dictionary as json file so it can be read in another python file
     with open('index_index_data.json','w', encoding='utf-8') as fp:
-        ujson.dump(word_dic,fp)
+        json.dump(word_dic,fp)
 
     #store all document ID appeared for query search
     with open('all_document_ID.txt','w', encoding='utf-8') as f:
