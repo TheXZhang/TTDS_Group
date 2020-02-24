@@ -315,6 +315,7 @@ chicken
 chicken
 
 
+<<<<<<< Updated upstream
 chicken
 chicken
 
@@ -359,3 +360,5 @@ chicken
 chicken
 
 
+=======
+>>>>>>> Stashed changes
