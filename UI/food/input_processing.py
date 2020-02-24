@@ -19,9 +19,9 @@ with open("nltk_food.txt", "r") as f:
 #         "url": "http://www.baidu.com"
 #     }
 # ]
-# add abb in this function !!!!!!!!
+# add abbreviation in this function !!!!!!!!
 abbs = dict()
-with open('abb.json') as f:
+with open('abbr.json') as f:
   abbs = json.load(f)
 
 

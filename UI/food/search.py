@@ -6,6 +6,7 @@ import sys
 import pandas as pd
 import timeit
 import pssf
+import time
 
 
 
@@ -40,7 +41,7 @@ def tfidf(word_list,dislike_list,index,all_doc_ID):
     scores=[]
     total_docID=len(all_doc_ID)
     result_ID=[]
-    
+
 
     new_word_list=[word for word in word_list if word not in dislike_list]
 
@@ -62,7 +63,7 @@ def tfidf(word_list,dislike_list,index,all_doc_ID):
     stop = timeit.default_timer()
     print('First module Time: ', stop - start)
 
-    
+
     start = timeit.default_timer()
 
     # for all the documents that contain at tleast one of the word
@@ -91,17 +92,17 @@ def tfidf(word_list,dislike_list,index,all_doc_ID):
     stop = timeit.default_timer()
     print('Second module Time: ', stop - start)
 
-        
+
 
     #sort the score list in descending order , it is a tuple (ID,score)
     scores.sort(key=lambda tup:tup[1], reverse= True)
     result_ID=[i[0] for i in scores]
-    result_ID=result_ID[:5]
+    result_ID=result_ID[:1]
 
     prep_info(result_ID,all_doc_ID)
 
 
-    
+
     # with open('result_ID.txt', 'w', encoding='utf-8') as f:
     #     for item in result_ID:
     #         f.write(item + "\n")
@@ -121,7 +122,7 @@ def retrieve_info(id_list,all_doc_ID):
         description=result['description'].values
         ingredients=result['ingredients'].values
         name=result['name'].values
-        
+
         return_result.append({})
         return_result[i]['id']=int(id_list[i])
         return_result[i]['name']=(str(name))[2:-2]
@@ -137,12 +138,12 @@ def display_info(ID,all_doc_ID):
     skip_id=temp_copy.remove(ID)
     df=pd.read_csv('RAW_recipes.csv', skiprows=skip_id, header=0)
 
-    
+
     result=df.loc[df['Doc_ID'] == int(ID)]
     ingredients=result['ingredients'].values
     steps=result['steps'].values
     name=result['name'].values
-    
+
     return_result['id']=int(ID)
     return_result['name']=(str(name))[2:-2]
     return_result['ingredients']=(str(ingredients))[2:-2]
@@ -163,14 +164,15 @@ def prep_info(id_list,all_doc_ID):
         ingredients=result['ingredients'].values
         steps=result['steps'].values
         name=result['name'].values
-        
-        return_result.append(id_list[i])
+
+        return_result.append("ID:" + id_list[i])
         return_result.append((str(name)))
         return_result.append((str(description)))
         return_result.append((str(ingredients)))
         return_result.append((str(steps)))
 
     new_word_list=pssf.main(return_result)
+    time.sleep(10000000)
 
     return new_word_list
 
@@ -178,7 +180,7 @@ def prep_info(id_list,all_doc_ID):
 
 
 def main(index,recipe, processed_dislike_list, dislike_list, processed_list):
- 
+
     #read all the document IDs and split it so we have a list of IDs
     all_doc_ID=open("all_document_ID.txt").read().split('\n')
     #delete the final character as its a empty string
@@ -195,4 +197,3 @@ def main(index,recipe, processed_dislike_list, dislike_list, processed_list):
 
 if __name__ == '__main__':
     pass
-    
