@@ -234,7 +234,7 @@ def validation(input, tok=False, sto=False, corr=False, check_food=False, stem=F
 
     write_to_query_file(' '.join(food_list))
 
-    # food_list = synonyms_hyponyms_hypernyms(food_list,nltk_food)
+    # food_list = synonyms_hyponyms_hypernyms(food_list,nltk_food)同义词提取 如果不需要则改成直接输出food_list 245,248行去掉注释，return 改foodlist
     food_list_new = []
     for food_elem in food_list:
             food_list_new+=synonyms_hyponyms_hypernyms(food_elem,nltk_food)
@@ -242,17 +242,18 @@ def validation(input, tok=False, sto=False, corr=False, check_food=False, stem=F
     # if stem is True, then process
     if stem == True:
         stem_input = stemm(food_list_new)
-        food_list = stemm(food_list)
+        # food_list = stemm(food_list)
     else:
         stem_input = food_list_new
-        food_list = food_list
+        # food_list = food_list
     stem_input = list(set(stem_input))
+    print(stem_input)
 
     # -----------------------user suggest stem_input 包括同义词搜索 与 food_list可替换
     # stem_input += give_sugges_by_query_dataset(origin_qfile,food_list)
     # food_list += give_sugges_by_query_dataset(origin_qfile, food_list)
 
-    return food_list
+    return stem_input
 
 
 
