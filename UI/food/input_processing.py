@@ -111,9 +111,13 @@ def synonyms_hyponyms_hypernyms(input_word,food_all_list):
 # check the word is food
 def if_food(word):
 
-    if word in nltk_food:
-        return 1
+    syns = wn.synsets(str(word), pos = wn.NOUN)
+
+    for syn in syns:
+        if 'food' or 'meat' or 'vegtable' in syn.lexname():
+            return 1
     return 0
+
 
 # tokenise string into list of words and remove punctuation
 def token(input):
@@ -254,9 +258,6 @@ def validation(input, tok=False, sto=False, corr=False, check_food=False, stem=F
     # food_list += give_sugges_by_query_dataset(origin_qfile, food_list)
 
     return food_list
-
-
-
 
 
 def handle(request):
