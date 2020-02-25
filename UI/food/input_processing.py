@@ -242,18 +242,18 @@ def validation(input, tok=False, sto=False, corr=False, check_food=False, stem=F
     # if stem is True, then process
     if stem == True:
         stem_input = stemm(food_list_new)
-        # food_list = stemm(food_list)
+        food_list = stemm(food_list)
     else:
         stem_input = food_list_new
-        # food_list = food_list
+        food_list = food_list
     stem_input = list(set(stem_input))
-    print(stem_input)
+    #print(stem_input)
 
     # -----------------------user suggest stem_input 包括同义词搜索 与 food_list可替换
     # stem_input += give_sugges_by_query_dataset(origin_qfile,food_list)
     # food_list += give_sugges_by_query_dataset(origin_qfile, food_list)
 
-    return stem_input
+    return food_list
 
 
 

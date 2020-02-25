@@ -51,11 +51,9 @@ def detail():
     global all_doc_ID
     detail_id = request.args.get("id")
     recipe=search.display_info(detail_id,all_doc_ID)
+    print("display ready")
     
 
-    # recipe_name, dislike_list, processed_list = handle(request)
-    # context = search(recipe_name, dislike_list, processed_list)
-    # recipe = context["recipe_list"][int(detail_id)]
 
     return render_template('detail.html',recipe=recipe)
 
