@@ -10,28 +10,8 @@ import time
 
 
 
-# def search(recipe, processed_dislike_list, dislike_list, processed_list):
-#     main(processed_list,processed_dislike_list)
-#     recipe_list= [
-#     {
-#         "id":0,
-#         "name": "bagel111",
-#         "ingredients": ["onion", 'bread'],
-#         "description": "this is a description of bagel,this is a description of bagel，this is a description of bagel, bagel,this is a description of bagel，th, bagel,this is a description of bagel，th",
-#         "url": ""
-#     },
-#     {
-#         "id":1,
-#         "name": "bagel222",
-#         "ingredients": ["onion", 'bread'],
-#         "description": "this is a description of bagel,this is a description of bagel，this is a description of bagel, bagel,this is a description of bagel，th, bagel,this is a description of bagel，th",
-#         "url": ""
-#     }
-# ]
 
-
-
-def tfidf(word_list,dislike_list,index,all_doc_ID, first_search=False):
+def tfidf(word_list,dislike_list,index,all_doc_ID,last_search_scores=[], first_search=False):
     #for tfidf,there maybe a stopword in the query,
     #so we read the stopword file and stem the word
     overlapped_docID=[]
@@ -103,13 +83,27 @@ def tfidf(word_list,dislike_list,index,all_doc_ID, first_search=False):
         new_list_ID=prep_info(result_ID,all_doc_ID)
         new_list_ID=new_list_ID + word_list
         print(new_list_ID)
-        return tfidf(new_list_ID,dislike_list,index,all_doc_ID, first_search=False)
+        return tfidf(new_list_ID,dislike_list,index,all_doc_ID, scores[:20], first_search=False)
     else:
+        final_score_tuple=[]
+        for score1 in last_search_scores:
+            for score2 in scores[:20]:
+                if score1[0]==score2[0]:
+                    final_score_tuple.append((score1[0],(0.75*int(score1[1])+0.25*int(score2[1]))))
+                else:
+                    final_score_tuple.append(score1)
+                    break
+
+        final_score_tuple.sort(key=lambda tup:tup[1], reverse= True)
+        final_Doc_ID=[i[0] for i in final_score_tuple]
+        print(final_Doc_ID)
+
+
         with open('result_ID.txt', 'w', encoding='utf-8') as f:
-            for item in result_ID:
+            for item in final_Doc_ID:
                 f.write(item + "\n")
 
-        result=retrieve_info(result_ID,all_doc_ID)
+        result=retrieve_info(final_Doc_ID,all_doc_ID)
         return result
     
     return []
@@ -122,15 +116,15 @@ def retrieve_info(id_list,all_doc_ID):
 
     for i in range(len(id_list)):
         result=df.loc[df['Doc_ID'] == int(id_list[i])]
-        description=result['description'].values
-        ingredients=result['ingredients'].values
-        name=result['name'].values
+        description=(result['description'].iloc[0]).replace('\'','')
+        ingredients=(result['ingredients'].iloc[0]).replace('\'','')
+        name=(result['name'].iloc[0]).replace('\'','')
 
         return_result.append({})
         return_result[i]['id']=int(id_list[i])
-        return_result[i]['name']=(str(name))[2:-2]
-        return_result[i]['ingredients']=(str(ingredients))[2:-2]
-        return_result[i]['description']=(str(description))[2:-2]
+        return_result[i]['name']=name
+        return_result[i]['ingredients']=ingredients[1:-1]
+        return_result[i]['description']=description[1:-1]
         return_result[i]['url']=''
     return return_result
 
@@ -143,14 +137,14 @@ def display_info(ID,all_doc_ID):
 
 
     result=df.loc[df['Doc_ID'] == int(ID)]
-    ingredients=result['ingredients'].values
-    steps=result['steps'].values
-    name=result['name'].values
+    ingredients=(result['ingredients'].iloc[0]).replace('\'','')
+    steps=(result['steps'].iloc[0]).replace('\'','')
+    name=(result['name'].iloc[0]).replace('\'','')
 
     return_result['id']=int(ID)
-    return_result['name']=(str(name))[2:-2]
-    return_result['ingredients']=(str(ingredients))[2:-2]
-    return_result['description']=(str(steps))[2:-2]
+    return_result['name']=name
+    return_result['ingredients']=ingredients[1:-1]
+    return_result['description']=steps[1:-1]
     return_result['url']=''
 
     return return_result
