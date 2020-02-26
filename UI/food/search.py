@@ -15,6 +15,7 @@ def tfidf(word_list,dislike_list,index,all_doc_ID,last_search_scores=[], first_s
     #for tfidf,there maybe a stopword in the query,
     #so we read the stopword file and stem the word
     overlapped_docID=[]
+    dislike_ID=[]
     idfs=[]
     tfs=[]
     score=0
@@ -25,87 +26,94 @@ def tfidf(word_list,dislike_list,index,all_doc_ID,last_search_scores=[], first_s
 
     new_word_list=[word for word in word_list if word not in dislike_list]
 
-    start = timeit.default_timer()
-
-    for word in new_word_list:
-        #for every word in the query,
-        #find out total number of document that the word appeared in
-        total_doc_word_appeared=len(index[word])
-        print(total_doc_word_appeared)
-        #calculate the idfs using the formula in lecture 7
-        idfs.append(math.log10(total_docID/total_doc_word_appeared))
-        #find out all the document IDs which at least one of the word in the query
-        overlapped_docID += (list(index[word].keys()))
-        #remove dupulicate and sort document IDs
-    overlapped_docID=list(set(overlapped_docID))
-    overlapped_docID.sort(key=int)
-
-    stop = timeit.default_timer()
-    print('First module Time: ', stop - start)
-
-
-    start = timeit.default_timer()
-
-    # for all the documents that contain at tleast one of the word
-    for ID in overlapped_docID:
-        #and for every word in the query
+    #start = timeit.default_timer()
+    try:
         for word in new_word_list:
-            #try to calculate term frequency
-            #if it causes a error. tf is 0, so this word never appeared in this document
-            #no need to calculate tfidf for this word in this document, so we give it 0
-            try:
-                tf=float(len(index[word][ID]))
-                tfs.append(1+math.log10(tf))
-            except:
-                tfs.append(0)
+            #for every word in the query,
+            #find out total number of document that the word appeared in
+            total_doc_word_appeared=len(index[word])
+            print(total_doc_word_appeared)
+            #calculate the idfs using the formula in lecture 7
+            idfs.append(math.log10(total_docID/total_doc_word_appeared))
+            #find out all the document IDs which at least one of the word in the query
+            overlapped_docID += (list(index[word].keys()))
+            #remove dupulicate and sort document IDs
 
-        #then for every word, take their idf and tf for this current document ID
-        #calulate a score
-        for i in range(len(idfs)):
-            score =score+(idfs[i]*tfs[i])
+        for word in dislike_list:
+            dislike_ID += list(index[word].keys())
+        dislike_ID = list(set(dislike_ID))
+        overlapped_docID=list(set(overlapped_docID))
+        overlapped_docID=[ID for ID in overlapped_docID if ID not in dislike_ID]
+        overlapped_docID.sort(key=int)
 
-        #append the score and its associated document ID to score list,
-        #reset tfs and score, for next document ID
-        scores.append((str(int(ID)+1),score))
-        tfs=[]
-        score=0
-    stop = timeit.default_timer()
-    print('Second module Time: ', stop - start)
+        # stop = timeit.default_timer()
+        # print('First module Time: ', stop - start)
 
 
+        # start = timeit.default_timer()
 
-    #sort the score list in descending order , it is a tuple (ID,score)
-    scores.sort(key=lambda tup:tup[1], reverse= True)
-    result_ID=[i[0] for i in scores]
-    result_ID=result_ID[:20]
+        # for all the documents that contain at tleast one of the word
+        for ID in overlapped_docID:
+            #and for every word in the query
+            for word in new_word_list:
+                #try to calculate term frequency
+                #if it causes a error. tf is 0, so this word never appeared in this document
+                #no need to calculate tfidf for this word in this document, so we give it 0
+                try:
+                    tf=float(len(index[word][ID]))
+                    tfs.append(1+math.log10(tf))
+                except:
+                    tfs.append(0)
 
-    if first_search == True:
-        new_list_ID=prep_info(result_ID,all_doc_ID)
-        new_list_ID=new_list_ID + word_list
-        print(new_list_ID)
-        return tfidf(new_list_ID,dislike_list,index,all_doc_ID, scores[:20], first_search=False)
-    else:
-        final_score_tuple=[]
-        for score1 in last_search_scores:
-            for score2 in scores[:20]:
-                if score1[0]==score2[0]:
-                    final_score_tuple.append((score1[0],(0.75*int(score1[1])+0.25*int(score2[1]))))
-                else:
-                    final_score_tuple.append(score1)
-                    break
+            #then for every word, take their idf and tf for this current document ID
+            #calulate a score
+            for i in range(len(idfs)):
+                score =score+(idfs[i]*tfs[i])
 
-        final_score_tuple.sort(key=lambda tup:tup[1], reverse= True)
-        final_Doc_ID=[i[0] for i in final_score_tuple]
-        print(final_Doc_ID)
+            #append the score and its associated document ID to score list,
+            #reset tfs and score, for next document ID
+            scores.append((str(int(ID)+1),score))
+            tfs=[]
+            score=0
+        # stop = timeit.default_timer()
+        # print('Second module Time: ', stop - start)
 
 
-        with open('result_ID.txt', 'w', encoding='utf-8') as f:
-            for item in final_Doc_ID:
-                f.write(item + "\n")
 
-        result=retrieve_info(final_Doc_ID,all_doc_ID)
-        return result
-    
+        #sort the score list in descending order , it is a tuple (ID,score)
+        scores.sort(key=lambda tup:tup[1], reverse= True)
+        result_ID=[i[0] for i in scores]
+        result_ID=result_ID[:20]
+
+        if first_search == True:
+            new_list_ID=prep_info(result_ID,all_doc_ID)
+            new_list_ID=new_list_ID + word_list
+            print(new_list_ID)
+            return tfidf(new_list_ID,dislike_list,index,all_doc_ID, scores[:20], first_search=False)
+        else:
+            final_score_tuple=[]
+            for score1 in last_search_scores:
+                for score2 in scores[:20]:
+                    if score1[0]==score2[0]:
+                        final_score_tuple.append((score1[0],(0.75*int(score1[1])+0.25*int(score2[1]))))
+                    else:
+                        final_score_tuple.append(score1)
+                        break
+
+            final_score_tuple.sort(key=lambda tup:tup[1], reverse= True)
+            final_Doc_ID=[i[0] for i in final_score_tuple]
+            print(final_Doc_ID)
+
+
+            with open('result_ID.txt', 'w', encoding='utf-8') as f:
+                for item in final_Doc_ID:
+                    f.write(item + "\n")
+
+            result=retrieve_info(final_Doc_ID,all_doc_ID)
+            return result
+    except:
+        return []
+        
     return []
 
 
