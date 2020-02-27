@@ -92,13 +92,18 @@ def tfidf(word_list,dislike_list,index,all_doc_ID,last_search_scores=[], first_s
             return tfidf(new_list_ID,dislike_list,index,all_doc_ID, scores[:20], first_search=False)
         else:
             final_score_tuple=[]
+            found=False
             for score1 in last_search_scores:
                 for score2 in scores[:20]:
                     if score1[0]==score2[0]:
                         final_score_tuple.append((score1[0],(0.75*int(score1[1])+0.25*int(score2[1]))))
-                    else:
-                        final_score_tuple.append(score1)
+                        found=True
                         break
+                if found:
+                    continue
+                else:
+                    final_score_tuple.append(score1)
+                    
 
             final_score_tuple.sort(key=lambda tup:tup[1], reverse= True)
             final_Doc_ID=[i[0] for i in final_score_tuple]
