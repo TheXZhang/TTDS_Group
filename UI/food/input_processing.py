@@ -30,7 +30,7 @@ with open('abbr.json') as f:
 from collections import Counter
 from itertools import groupby
 
-# write into query dataset 但是这一部分需要随机写入，因为不保证每个都是有效的 e.g.有人输入很多次 b + c则数据库b/c部分会无意义填充进很多b + c的组合.
+# write into query dataset
 def read_query_file():
     query_list = []
     with open("query.txt") as f:
@@ -72,9 +72,9 @@ def give_sugges_by_query_dataset(origin_qfile,query):
 def synonyms_hyponyms_hypernyms(input_word,food_all_list):
     # -----------------input to list of synsets
     in_list= wn.synsets(input_word)
-    # -----------------all the 同义词 下位词 上位词 into list
+    # -----------------synonyms_hyponyms_hypernyms list
     all_synonyms_hyponyms_hypernyms = []
-    # -----------------同义词
+    # -----------------synonyms
     synonyms = []
     for syn in in_list:
         for lm in syn.lemmas():
@@ -83,7 +83,7 @@ def synonyms_hyponyms_hypernyms(input_word,food_all_list):
     # 问题1
     # ['boeuf', 'crab', 'beef', 'grouse']会出现不相关的词 怎么办
     # print(out)
-    # -----------------下位词
+    # -----------------hyponyms
     hyponyms = []
     for syn in in_list:
         types_word_sys = syn.hyponyms()
@@ -91,7 +91,7 @@ def synonyms_hyponyms_hypernyms(input_word,food_all_list):
         hyponyms+=out2
     all_synonyms_hyponyms_hypernyms += hyponyms
     # print(hyponyms)
-    # -----------------上位词
+    # -----------------hypernyms
     hypernyms = []
     for syn in in_list:
         types_word_sys = syn.hypernyms()
@@ -99,7 +99,7 @@ def synonyms_hyponyms_hypernyms(input_word,food_all_list):
         hypernyms+=out_hyper
     all_synonyms_hyponyms_hypernyms += hypernyms
     # print(hyponyms)
-    # ----------------整合
+    # ----------------synonyms_hyponyms_hypernyms grap together
     all_synonyms_hyponyms_hypernyms = list(set(all_synonyms_hyponyms_hypernyms).intersection(food_all_list))
     processed_synonyms_hyponyms_hypernyms = []
     for word in all_synonyms_hyponyms_hypernyms:
@@ -135,6 +135,7 @@ def check_abbreviations(input_list,abbs):
         if word in abbs.keys():
             value = abbs.get(word)
             abbs_out.append(value)
+            abbs_out.append(word)
         else:
             abbs_out.append(word)
 
@@ -238,7 +239,7 @@ def validation(input, tok=False, sto=False, corr=False, check_food=False, stem=F
 
     write_to_query_file(' '.join(food_list))
 
-    # food_list = synonyms_hyponyms_hypernyms(food_list,nltk_food)同义词提取 如果不需要则改成直接输出food_list 245,248行去掉注释，return 改foodlist
+    # food_list = synonyms_hyponyms_hypernyms(food_list,nltk_food) synonyms_hyponyms_hypernyms extraction
     food_list_new = []
     for food_elem in food_list:
             food_list_new+=synonyms_hyponyms_hypernyms(food_elem,nltk_food)
@@ -253,7 +254,7 @@ def validation(input, tok=False, sto=False, corr=False, check_food=False, stem=F
     stem_input = list(set(stem_input))
     #print(stem_input)
 
-    # -----------------------user suggest stem_input 包括同义词搜索 与 food_list可替换
+    # -----------------------user suggest stem_input 
     # stem_input += give_sugges_by_query_dataset(origin_qfile,food_list)
     # food_list += give_sugges_by_query_dataset(origin_qfile, food_list)
 

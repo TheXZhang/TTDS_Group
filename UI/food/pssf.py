@@ -1,26 +1,3 @@
-# ---------for top n file 此处只取前十个 此处我们假装取了十个
-# f = open("results.ranked.txt", "r")
-# nlistAll = []
-# for x in f:
-#     x = x.split()
-#     nlistAll.append(x)
-#     # print(flagList)
-# # print(nlistAll)
-#
-# adic = dict()
-# flag = '0'
-# aa = []
-# for li in nlistAll:
-#     if flag !=li[0]:
-#         adic[flag] = aa
-#         aa =[]
-#         flag = li[0]
-#     else:
-#         aa.append(li)
-# del adic['0']
-# # print(adic)
-
-# 输出： {'1': [['1', '0', '3533', '0', '7.753', '0'], ['1', '0', '3562', '0', '5.693', '0'], ['1', '0', '3608', '0', '5.639', '0'], ['1', '0', '92', '0', '5.461', '0'], ['1', '0', '141', '0', '5.294', '0'], ['1', '0', '361', '0', '5.294', '0'], ['1', '0', '3734', '0', '5.197', '0'], ['1', '0', '3829', '0', '5.15', '0'], ['1', '0', '3420', '0', '5.108', '0']], '2': [['2', '0', '305', '0', '9.85', '0'], ['2', '0', '288', '0', '9.57', '0'], ['2', '0', '223', '0', '8.842', '0'].....}
 
 
 # --------- Read the preprocessed document from the collection (if you don't have the collection saved after preprocessing, then read the document from the collection then apply preprocessing to it).
@@ -31,7 +8,7 @@ import re
 import string
 import time
 import json
-# below is the function for doing tokenize, remove stop_words, punctuation and stem（预处理）
+# below is the function for doing tokenize, remove stop_words, punctuation and stem（preprocess）
 def tokenize_lower_noPunc_remove_stop_stem(file):
     stop_words =[line.strip() for line in open('stop_words.txt')]
     ps = PorterStemmer()
@@ -180,7 +157,6 @@ def wordScore(positional_iied, n):
 
     return sorted(dictunSort, key=dictunSort.get, reverse=True)[:2]
 
-# 读取trec.asmple.txt
 
 
 def main(topNDoc):
