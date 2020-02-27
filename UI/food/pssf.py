@@ -106,7 +106,7 @@ def positional_ii(texts):
 
     positioned_index=dict()
     # write to the .txt file in this step
-    f= open("index2.txt","w")
+    f= open("index2.txt","w", encoding='utf-8')
     for i in range(len(flipped)):
 
         term = list(flipped.keys())[i]
@@ -162,8 +162,8 @@ def wordScore(positional_iied, n):
 def main(topNDoc):
 
     filtered_words= tokenize_lower_noPunc_remove_stop_stem(topNDoc)
-    print("-----------top N Doc")
-    print(filtered_words)
+    # print("-----------top N Doc")
+    # print(filtered_words)
     cleaned = before_pii(filtered_words)
     # print(cleaned)
     positional_iied = positional_ii(cleaned)

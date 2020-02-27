@@ -85,14 +85,23 @@ def tfidf(word_list,dislike_list,index,all_doc_ID,last_search_scores=[], first_s
         result_ID=[i[0] for i in scores]
         result_ID=result_ID[:20]
 
+        print(result_ID)
+
+        
+
         if first_search == True:
+            print("first search finishes")
             new_list_ID=prep_info(result_ID,all_doc_ID)
             new_list_ID=new_list_ID + word_list
+            print("new ID get")
             print(new_list_ID)
             return tfidf(new_list_ID,dislike_list,index,all_doc_ID, scores[:20], first_search=False)
         else:
+            print("second search finishes")
             final_score_tuple=[]
             found=False
+            print(len(last_search_scores))
+            print(len(scores[:20]))
             for score1 in last_search_scores:
                 for score2 in scores[:20]:
                     if score1[0]==score2[0]:
@@ -100,6 +109,7 @@ def tfidf(word_list,dislike_list,index,all_doc_ID,last_search_scores=[], first_s
                         found=True
                         break
                 if found:
+                    found=False
                     continue
                 else:
                     final_score_tuple.append(score1)
@@ -182,6 +192,7 @@ def prep_info(id_list,all_doc_ID):
         return_result.append((str(steps)))
 
     new_word_list=pssf.main(return_result)
+    print("ready")
 
     return new_word_list
 
@@ -194,6 +205,8 @@ def main(index,recipe, processed_dislike_list, dislike_list, processed_list):
     all_doc_ID=open("all_document_ID.txt").read().split('\n')
     #delete the final character as its a empty string
     del all_doc_ID[-1]
+
+    print(processed_list)
 
     recipe_list=tfidf(processed_list,processed_dislike_list,index,all_doc_ID,first_search=True)
 
