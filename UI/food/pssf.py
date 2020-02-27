@@ -134,7 +134,7 @@ def positional_ii(texts):
     f.close()
     return(positioned_index)
 
-# 进行运算：此处我们假设取top2的文件进行提取关键词 N=2 对前2个的文章取词：
+# Perform the operation: Here we assume that the top2 file is used to extract keywords N = 2 Take the words of the first 2 articles:
 import math
 
 def wordScore(positional_iied, n):
@@ -150,7 +150,7 @@ def wordScore(positional_iied, n):
             # print(positional_iied[sth][x])#出现在此文件的list
             # print(len(positional_iied[sth][x]))#出现在此文件的频率
 
-            value = (1+math.log10(len(positional_iied[sth][x])))*math.log10(2/len(positional_iied[sth]))
+            value = (1+math.log10(len(positional_iied[sth][x])))*math.log10(n/len(positional_iied[sth]))
             Scoredvalue+= value
             # print(Scoredvalue)
         dictunSort[word]=Scoredvalue
@@ -162,6 +162,8 @@ def wordScore(positional_iied, n):
 def main(topNDoc):
 
     filtered_words= tokenize_lower_noPunc_remove_stop_stem(topNDoc)
+    print("-----------top N Doc")
+    print(filtered_words)
     cleaned = before_pii(filtered_words)
     # print(cleaned)
     positional_iied = positional_ii(cleaned)
