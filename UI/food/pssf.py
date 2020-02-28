@@ -144,11 +144,11 @@ def wordScore(positional_iied, n):
         Scoredvalue = 0
         # print(word)
         # print(positional_iied[sth]) #{'2': [124]}
-        # print(" df " + str(len(positional_iied[sth]))) #多少文件df
+        # print(" df " + str(len(positional_iied[sth]))) #
         for x in positional_iied[sth]:
-            # print(x)  #表第几个文件ID
-            # print(positional_iied[sth][x])#出现在此文件的list
-            # print(len(positional_iied[sth][x]))#出现在此文件的频率
+            # print(x)  #no of file
+            # print(positional_iied[sth][x])#list
+            # print(len(positional_iied[sth][x]))#freq
 
             value = (1+math.log10(len(positional_iied[sth][x])))*math.log10(n/len(positional_iied[sth]))
             Scoredvalue+= value

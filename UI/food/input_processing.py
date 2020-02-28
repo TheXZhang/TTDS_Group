@@ -25,7 +25,7 @@ with open('abbr.json') as f:
   abbs = json.load(f)
 
 
-# -----------------------------------------Display learnt terms with search    由其他用户的输入判断
+# -----------------------------------------Display learnt terms with search
 # 假设我们输入的query的 keywords 都存入 query.txt
 from collections import Counter
 from itertools import groupby
@@ -67,7 +67,7 @@ def give_sugges_by_query_dataset(origin_qfile,query):
     # pick off the first group (highest frequency)
     freq_mode_list = [val for val,count in next(freqs)[1]]
     return freq_mode_list
-# -----------------------------------------User/pseudo/implicit feedback    用户输入的内在含义（同义词，上下级词）使用word net
+# -----------------------------------------synonyms_hyponyms_hypernym
 
 def synonyms_hyponyms_hypernyms(input_word,food_all_list):
     # -----------------input to list of synsets
@@ -81,7 +81,7 @@ def synonyms_hyponyms_hypernyms(input_word,food_all_list):
                  synonyms.append(lm.name())#adding into synonyms
     all_synonyms_hyponyms_hypernyms += synonyms
     # 问题1
-    # ['boeuf', 'crab', 'beef', 'grouse']会出现不相关的词 怎么办
+    # ['boeuf', 'crab', 'beef', 'grouse']
     # print(out)
     # -----------------hyponyms
     hyponyms = []
@@ -126,7 +126,7 @@ def token(input):
     # remove punctuation and split string into list
     split_input = input.translate(translator).split()
     return split_input
-# -----------------------------------------缩写词扩写
+# -----------------------------------------abbreviation
 # Food abbreviations transformation
 def check_abbreviations(input_list,abbs):
     # input_list = ['lrg','liq']
