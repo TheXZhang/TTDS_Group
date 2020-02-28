@@ -4,13 +4,24 @@
     <meta charset="UTF-8">
     <title>Detail</title>
     <link rel="stylesheet" type="text/css" href="../static/css/detail.css?version=12.12022"/>
+    <style>div.scroll { 
+        margin:4px, 4px; 
+        padding:4px; 
+        width: 420px; 
+        height: 200px; 
+        overflow-x: hidden; 
+        overflow-x: auto; 
+        text-align:justify; 
+    } </style>
 </head>
 
 <body>
 <div class="data">
-    <h1>{{ recipe.name }}</h1>
+    <h3>{{ recipe.name }}</h3>
     <h3>Ingredients: {{ recipe.ingredients }}</h3>
-    <h3>Description: {{ recipe.description }}</h3>
+    <h3>Description: </h3>
+    <div class="scroll">{{ recipe.description }}</div> 
+
     <a href="./">Back Home</a>
 </div>
 </body>
