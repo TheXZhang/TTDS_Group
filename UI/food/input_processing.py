@@ -108,13 +108,17 @@ def synonyms_hyponyms_hypernyms(input_word,food_all_list):
 
     return processed_synonyms_hyponyms_hypernyms
 
-# check the word is food
+# check the word is any kind of food food
 def if_food(word):
 
     syns = wn.synsets(str(word), pos = wn.NOUN)
 
     for syn in syns:
-        if 'food' or 'meat' or 'vegtable' in syn.lexname():
+        if 'food' in syn.lexname():
+            return 1
+        elif 'meat' in syn.lexname():
+            return 1
+        elif 'vegtable' in syn.lexname():
             return 1
     return 0
 
@@ -280,7 +284,7 @@ def handle(request):
     # dislike food list for user
     list_of_dislike_user = validation(dislike_list, corr=True)
 
-    # verify the dilike food
+    # verify the dilike food for server
     list_of_dislike_server = validation(dislike_list, corr=True, check_food=True, stem=True)
 
     return list_of_food_user, list_of_dislike_server, list_of_dislike_user,list_of_food_server
