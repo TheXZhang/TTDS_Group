@@ -73,7 +73,7 @@ def tfidf(word_list,dislike_list,index,all_doc_ID,dislike_ID,last_search_scores=
         #sort the score list in descending order , it is a tuple (ID,score)
         scores.sort(key=lambda tup:tup[1], reverse= True)
         temp=[]
-        print(len(scores))
+        #print(len(scores))
         start = timeit.default_timer()
         if len(scores)>=20:
             count=0
@@ -99,26 +99,26 @@ def tfidf(word_list,dislike_list,index,all_doc_ID,dislike_ID,last_search_scores=
             scores=temp
         stop = timeit.default_timer()
         scores=scores[:20]
-        print('negation Time: ', stop - start)
+        #print('negation Time: ', stop - start)
         result_ID=[i[0] for i in scores]
 
-        print(scores)
+        #print(scores)
 
         
 
         if first_search == True:
-            print("first search finishes")
+            #print("first search finishes")
             new_list_ID=prep_info(result_ID,all_doc_ID)
             new_list_ID=new_list_ID + word_list
-            print("new ID get")
-            print(new_list_ID)
+            #print("new ID get")
+            #print(new_list_ID)
             return tfidf(new_list_ID,dislike_list,index,all_doc_ID, dislike_ID, last_search_scores=scores , first_search=False)
         else:
-            print("second search finishes")
+            #print("second search finishes")
             final_score_tuple=[]
             found=False
-            print(len(last_search_scores))
-            print(len(scores[:20]))
+            #print(len(last_search_scores))
+            #print(len(scores[:20]))
             for score1 in last_search_scores:
                 for score2 in scores:
                     if score1[0]==score2[0]:
@@ -134,7 +134,7 @@ def tfidf(word_list,dislike_list,index,all_doc_ID,dislike_ID,last_search_scores=
 
             final_score_tuple.sort(key=lambda tup:tup[1], reverse= True)
             final_Doc_ID=[i[0] for i in final_score_tuple]
-            print(final_Doc_ID)
+            #print(final_Doc_ID)
 
 
             with open('result_ID.txt', 'w', encoding='utf-8') as f:
@@ -209,7 +209,7 @@ def prep_info(id_list,all_doc_ID):
         return_result.append((str(steps)))
 
     new_word_list=pssf.main(return_result)
-    print("ready")
+    #print("ready")
 
     return new_word_list
 
@@ -223,15 +223,15 @@ def main(index,recipe, processed_dislike_list, dislike_list, processed_list):
     #delete the final character as its a empty string
     del all_doc_ID[-1]
 
-    print(processed_list)
+    #print(processed_list)
 
     dislike_IDs=[]
     for word in processed_dislike_list:
-        print("this is dislike list")
-        print(word)
+        #print("this is dislike list")
+        #print(word)
         dislike_IDs += list(index[word].keys())
     dislike_IDs.sort(key=int)
-    print(len(dislike_IDs))
+    #print(len(dislike_IDs))
 
     with open("dislike_IDs.txt", "w") as fp:
         for ID in dislike_IDs:
