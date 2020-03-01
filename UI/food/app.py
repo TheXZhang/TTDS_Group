@@ -3,16 +3,16 @@ from input_processing import handle
 import search
 import json
 
-app = Flask(__name__)
-
-
-
-
 with open('index_index_data.json', 'r') as fp:
     inverted_index = json.load(fp)
 
 all_doc_ID=open("all_document_ID.txt").read().split('\n')
 del all_doc_ID[-1]
+
+
+app = Flask(__name__)
+
+
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -56,6 +56,7 @@ def detail():
 
 
     return render_template('detail.html',recipe=recipe)
+
 
 
 if __name__ == '__main__':

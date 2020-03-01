@@ -11,11 +11,10 @@ import time
 
 
 
-def tfidf(word_list,dislike_list,index,all_doc_ID,last_search_scores=[], first_search=False):
+def tfidf(word_list,dislike_list,index,all_doc_ID,dislike_ID,last_search_scores=[], first_search=False):
     #for tfidf,there maybe a stopword in the query,
     #so we read the stopword file and stem the word
     overlapped_docID=[]
-    dislike_ID=[]
     idfs=[]
     tfs=[]
     score=0
@@ -39,18 +38,11 @@ def tfidf(word_list,dislike_list,index,all_doc_ID,last_search_scores=[], first_s
             overlapped_docID += (list(index[word].keys()))
             #remove dupulicate and sort document IDs
 
-        for word in dislike_list:
-            dislike_ID += list(index[word].keys())
-        dislike_ID = list(set(dislike_ID))
+        
         overlapped_docID=list(set(overlapped_docID))
-        overlapped_docID=[ID for ID in overlapped_docID if ID not in dislike_ID]
         overlapped_docID.sort(key=int)
 
-        # stop = timeit.default_timer()
-        # print('First module Time: ', stop - start)
 
-
-        # start = timeit.default_timer()
 
         # for all the documents that contain at tleast one of the word
         for ID in overlapped_docID:
@@ -72,20 +64,45 @@ def tfidf(word_list,dislike_list,index,all_doc_ID,last_search_scores=[], first_s
 
             #append the score and its associated document ID to score list,
             #reset tfs and score, for next document ID
-            scores.append((str(int(ID)+1),score))
+            scores.append((str(ID),score))
             tfs=[]
             score=0
-        # stop = timeit.default_timer()
-        # print('Second module Time: ', stop - start)
 
 
 
         #sort the score list in descending order , it is a tuple (ID,score)
         scores.sort(key=lambda tup:tup[1], reverse= True)
-        result_ID=[i[0] for i in scores]
-        result_ID=result_ID[:20]
+        temp=[]
+        print(len(scores))
+        start = timeit.default_timer()
+        if len(scores)>=20:
+            count=0
+            found=False
+            for item in scores:
+                for ID2 in dislike_ID:
+                    if item[0]==ID2:
+                        found=True
+                        break
+                
+                if found:
+                    found=False
+                    continue
+                else:
+                    #print(ID1)
+                    temp.append((item[0],score))
+                    #print(temp)
+                    count +=1
+                    found=False
 
-        print(result_ID)
+                if count == 20:
+                    break
+            scores=temp
+        stop = timeit.default_timer()
+        scores=scores[:20]
+        print('negation Time: ', stop - start)
+        result_ID=[i[0] for i in scores]
+
+        print(scores)
 
         
 
@@ -95,7 +112,7 @@ def tfidf(word_list,dislike_list,index,all_doc_ID,last_search_scores=[], first_s
             new_list_ID=new_list_ID + word_list
             print("new ID get")
             print(new_list_ID)
-            return tfidf(new_list_ID,dislike_list,index,all_doc_ID, scores[:20], first_search=False)
+            return tfidf(new_list_ID,dislike_list,index,all_doc_ID, dislike_ID, last_search_scores=scores , first_search=False)
         else:
             print("second search finishes")
             final_score_tuple=[]
@@ -103,7 +120,7 @@ def tfidf(word_list,dislike_list,index,all_doc_ID,last_search_scores=[], first_s
             print(len(last_search_scores))
             print(len(scores[:20]))
             for score1 in last_search_scores:
-                for score2 in scores[:20]:
+                for score2 in scores:
                     if score1[0]==score2[0]:
                         final_score_tuple.append((score1[0],(0.75*int(score1[1])+0.25*int(score2[1]))))
                         found=True
@@ -135,11 +152,11 @@ def tfidf(word_list,dislike_list,index,all_doc_ID,last_search_scores=[], first_s
 def retrieve_info(id_list,all_doc_ID):
     return_result=[]
     skip_id=[int(ID) for ID in all_doc_ID if ID not in id_list]
-    df=pd.read_csv('RAW_recipes.csv', skiprows=skip_id, header=0)
+    df=pd.read_csv('RAW_recipes.csv', skiprows=skip_id, header=0, encoding='ISO-8859-1' )
 
     for i in range(len(id_list)):
         result=df.loc[df['Doc_ID'] == int(id_list[i])]
-        description=(result['description'].iloc[0]).replace('\'','')
+        description=(str(result['description'].iloc[0])).replace('\'','')
         ingredients=(result['ingredients'].iloc[0]).replace('\'','')
         name=(result['name'].iloc[0]).replace('\'','')
 
@@ -156,7 +173,7 @@ def display_info(ID,all_doc_ID):
     return_result={}
     temp_copy=all_doc_ID.copy()
     skip_id=temp_copy.remove(ID)
-    df=pd.read_csv('RAW_recipes.csv', skiprows=skip_id, header=0)
+    df=pd.read_csv('RAW_recipes.csv', skiprows=skip_id, header=0, engine='python',encoding='ISO-8859-1')
 
 
     result=df.loc[df['Doc_ID'] == int(ID)]
@@ -176,7 +193,7 @@ def display_info(ID,all_doc_ID):
 def prep_info(id_list,all_doc_ID):
     return_result=[]
     skip_id=[int(ID) for ID in all_doc_ID if ID not in id_list]
-    df=pd.read_csv('RAW_recipes.csv', skiprows=skip_id, header=0)
+    df=pd.read_csv('RAW_recipes.csv', skiprows=skip_id, header=0, encoding='ISO-8859-1')
 
     for i in range(len(id_list)):
         result=df.loc[df['Doc_ID'] == int(id_list[i])]
@@ -208,7 +225,20 @@ def main(index,recipe, processed_dislike_list, dislike_list, processed_list):
 
     print(processed_list)
 
-    recipe_list=tfidf(processed_list,processed_dislike_list,index,all_doc_ID,first_search=True)
+    dislike_IDs=[]
+    for word in processed_dislike_list:
+        print("this is dislike list")
+        print(word)
+        dislike_IDs += list(index[word].keys())
+    dislike_IDs.sort(key=int)
+    print(len(dislike_IDs))
+
+    with open("dislike_IDs.txt", "w") as fp:
+        for ID in dislike_IDs:
+            fp.write(ID+"\n")
+
+
+    recipe_list=tfidf(processed_list,processed_dislike_list,index,all_doc_ID, dislike_IDs,first_search=True)
 
     return {
         "recipe_name": recipe,

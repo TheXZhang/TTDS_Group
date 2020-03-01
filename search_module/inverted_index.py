@@ -1,7 +1,7 @@
 import re
 import nltk
 import time
-import json
+import ujson
 import pandas as pd
 import timeit
 
@@ -137,7 +137,7 @@ def positional_inverted_index(preprocessed_list):
 
     #store the dictionary as json file so it can be read in another python file
     with open('index_index_data.json','w', encoding='utf-8') as fp:
-        json.dump(word_dic,fp)
+        ujson.dump(word_dic,fp)
 
     #store all document ID appeared for query search
     with open('all_document_ID.txt','w', encoding='utf-8') as f:
@@ -148,7 +148,7 @@ def positional_inverted_index(preprocessed_list):
 
 def main():
     columns=['name','id','minutes','contributor_id','submitted','tags','nutrition','n_steps','steps','description','ingredients','n_ingredients']
-    data=pd.read_csv("RAW_recipes.csv", names = columns, header=0, nrows=1000)
+    data=pd.read_csv("RAW_recipes.csv", names = columns, header=0, nrows=150000)
 
     minutes_list=data.minutes.tolist()
     steps_list=data.steps.tolist()
